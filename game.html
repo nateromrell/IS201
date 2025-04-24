@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fruit Matching Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f4f6;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .game-container {
+        max-width: 400px;
+        text-align: center;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .card {
+        width: 80px;
+        height: 80px;
+        background-color: #ddd;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+      }
+
+      .card.flipped {
+        background-color: white; /* Background color when flipped */
+        color: black;
+        cursor: default;
+      }
+
+      .card.matched {
+        background-color: #4caf50; /* Background color for matched cards */
+        color: white;
+        cursor: default;
+        opacity: 0.8;
+      }
+
+      .leaderboard {
+        margin-top: 20px;
+        text-align: left;
+      }
+
+      .leaderboard h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+
+      .leaderboard ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .leaderboard li {
+        background: #fff;
+        padding: 5px 10px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <h1>Fruit Matching Game</h1>
+      <p id="timer">Time: 0 seconds</p>
+      <div class="grid" id="grid"></div>
+      <button id="restart">Restart Game</button>
+      <div class="leaderboard">
+        <h2>Leaderboard</h2>
+        <ul id="leaderboard"></ul>
+      </div>
+    </div>
+
+    <script>
+      const fruits = ['🍎', '🍌', '🍇', '🍓', '🍊', '🍉', '🍍', '🥝'];
+      let cards = [];
+      let flippedCards = [];
+      let matchedCards = [];
+      let timer = 0;
+      let intervalId = null;
+      let leaderboard = [];
+
+      const grid = document.getElementById('grid');
+      const timerElement = document.getElementById('timer');
+      const leaderboardElement = document.getElementById('leaderboard');
+      const restartButton = document.getElementById('restart');
+
+      const shuffleArray = (array) => {
+        const newArray = [...array, ...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+      };
+
+      const startTimer = () => {
+        timer = 0;
+        timerElement.textContent = `Time: ${timer} seconds`;
+        intervalId = setInterval(() => {
+          timer++;
+          timerElement.textContent = `Time: ${timer} seconds`;
+        }, 1000);
+      };
+
+      const stopTimer = () => {
+        clearInterval(intervalId);
+      };
+
+      const initializeGame = () => {
+        cards = shuffleArray(fruits);
+        flippedCards = [];
+        matchedCards = [];
+        grid.innerHTML = '';
+        leaderboardElement.innerHTML = '';
+        cards.forEach((fruit, index) => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.dataset.index = index;
+          card.dataset.fruit = fruit;
+          card.textContent = '❓';
+          card.addEventListener('click', handleCardClick);
+          grid.appendChild(card);
+        });
+        startTimer();
+      };
+
+      const handleCardClick = (event) => {
+        const card = event.target;
+        const index = card.dataset.index;
+
+        if (flippedCards.length === 2 || card.classList.contains('flipped') || card.classList.contains('matched')) {
+          return;
+        }
+
+        card.textContent = card.dataset.fruit;
+        card.classList.add('flipped');
+        flippedCards.push(index);
+
+        if (flippedCards.length === 2) {
+          const [firstIndex, secondIndex] = flippedCards;
+          const firstCard = document.querySelector(`.card[data-index="${firstIndex}"]`);
+          const secondCard = document.querySelector(`.card[data-index="${secondIndex}"]`);
+
+          if (firstCard.dataset.fruit === secondCard.dataset.fruit) {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            matchedCards.push(firstIndex, secondIndex);
+            flippedCards = [];
+
+            if (matchedCards.length === cards.length) {
+              stopTimer();
+              updateLeaderboard(timer);
+              alert(`Congratulations! You finished in ${timer} seconds.`);
+            }
+          } else {
+            setTimeout(() => {
+              firstCard.textContent = '❓';
+              secondCard.textContent = '❓';
+              firstCard.classList.remove('flipped');
+              secondCard.classList.remove('flipped');
+              flippedCards = [];
+            }, 1000);
+          }
+        }
+      };
+
+      const updateLeaderboard = (time) => {
+        leaderboard.push(time);
+        leaderboard.sort((a, b) => a - b);
+        leaderboard = leaderboard.slice(0, 5);
+        leaderboardElement.innerHTML = leaderboard
+          .map((time, index) => `<li>#${index + 1}: ${time} seconds</li>`)
+          .join('');
+      };
+
+      restartButton.addEventListener('click', () => {
+        stopTimer();
+        initializeGame();
+      });
+
+      initializeGame();
+    </script>
+  </body>
+</html>

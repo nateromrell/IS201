@@ -1,0 +1,85 @@
+/* General styles */
+body {
+    background-color: #f4f4f9; /* Custom background color */
+    font-family: Arial, sans-serif; /* Font family */
+    color: #333; /* Font color */
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+.header {
+    background-color: #006bb6; /* Golden State Warriors blue */
+    color: #fff; /* White text */
+    text-align: center;
+    padding: 20px;
+}
+
+/* Content styles */
+.content {
+    padding: 20px;
+    text-align: center; /* Center-align the accolade list */
+}
+
+.content h2 {
+    color: #006bb6; /* Accent color */
+    font-size: 2rem; /* Larger font size */
+}
+
+.centered-list {
+    display: inline-block; /* Center the list */
+    text-align: left; /* Keep the list items aligned to the left */
+    font-size: 1.2rem; /* Increase font size */
+}
+
+/* Media styles */
+.media {
+    padding: 20px;
+    text-align: center;
+}
+
+.curry-image {
+    max-width: 50%; /* Reduce image size to half */
+    height: auto;
+    border: 2px solid #006bb6;
+}
+
+/* Footer styles */
+.footer {
+    background-color: #eee;
+    text-align: center;
+    padding: 10px;
+}
+
+.list-title {
+    font-weight: bold;
+}
+
+/* filepath: /Users/nate/Downloads/startbootstrap-clean-blog-gh-pages/css/curry.css */
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start; /* Align items to the left */
+}
+
+.navbar li {
+    margin: 0 5px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
